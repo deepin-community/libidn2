@@ -1,5 +1,5 @@
 /* idna.h - internal IDNA function prototypes
-   Copyright (C) 2011-2021 Simon Josefsson
+   Copyright (C) 2011-2025 Simon Josefsson
 
    Libidn2 is free software: you can redistribute it and/or modify it
    under the terms of either:
@@ -27,11 +27,11 @@
 */
 
 #ifndef LIBIDN2_IDNA_H
-#define LIBIDN2_IDNA_H
+# define LIBIDN2_IDNA_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "idn2.h"
+# include <stdint.h>
+# include <stdbool.h>
+# include "idn2.h"
 
 enum
 {

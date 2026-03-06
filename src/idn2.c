@@ -1,5 +1,5 @@
 /* idn2.c - command line interface to libidn2
-   Copyright (C) 2011-2021 Simon Josefsson, Tim Ruehsen
+   Copyright (C) 2011-2025 Simon Josefsson, Tim Ruehsen
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,15 +33,13 @@
 #include <unistring/localcharset.h>
 
 /* Gnulib headers. */
-#include "error.h"
-#include "gettext.h"
+#include <error.h>
+#include <gettext.h>
 #define _(String) dgettext (PACKAGE, String)
-#include "progname.h"
-#include "version-etc.h"
+#include <progname.h>
+#include <version-etc.h>
 
 #include "idn2_cmd.h"
-
-#include "blurbs.h"
 
 #ifdef __cplusplus
 extern				// define a global const variable in C++, C doesn't need it.
@@ -122,12 +120,15 @@ hexdump (const char *prefix, const char *str)
   if (u8 && strcmp (str, (char *) u8) != 0)
     for (i = 0; i < strlen ((char *) u8); i++)
       fprintf (stderr, "UTF-8 %s[%lu] = 0x%02x\n",
-	       prefix, (unsigned long) i, u8[i] & 0xFF);
+	       prefix, (unsigned long) i, (unsigned) u8[i] & 0xFF);
 
   if (u8 && u32)
     for (i = 0; i < u32len; i++)
       fprintf (stderr, "UCS-4 %s[%lu] = U+%04x\n",
 	       prefix, (unsigned long) i, u32[i]);
+
+  free (u8);
+  free (u32);
 }
 
 static struct gengetopt_args_info args_info;
@@ -142,17 +143,6 @@ process_input (char *readbuf, int flags)
 
   if (len && readbuf[len - 1] == '\n')
     readbuf[len - 1] = '\0';
-
-  if (strcmp (readbuf, "show w") == 0)
-    {
-      puts (WARRANTY);
-      return;
-    }
-  else if (strcmp (readbuf, "show c") == 0)
-    {
-      puts (CONDITIONS);
-      return;
-    }
 
   if (args_info.debug_given)
     hexdump ("input", readbuf);
@@ -194,6 +184,7 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   set_program_name (argv[0]);
   bindtextdomain (PACKAGE, LOCALEDIR);
+  bindtextdomain ("gnulib", GNULIB_LOCALEDIR);
   textdomain (PACKAGE);
 
   if (cmdline_parser (argc, argv, &args_info) != 0)
@@ -211,10 +202,16 @@ main (int argc, char *argv[])
 
   if (!args_info.quiet_given
       && args_info.inputs_num == 0 && isatty (fileno (stdin)))
-    fprintf (stderr, "%s %s\n" GREETING, PACKAGE, VERSION);
+    version_etc (stderr, NULL, PACKAGE, VERSION, (char *) NULL);
 
   if (args_info.debug_given)
     fprintf (stderr, _("Charset: %s\n"), locale_charset ());
+
+#if !HAVE_ICONV
+  if (strcmp (locale_charset (), "UTF-8") != 0)
+    error (77, 0, _("libiconv required for non-UTF-8 character encoding: %s"),
+	   locale_charset ());
+#endif
 
   if (!args_info.quiet_given
       && args_info.inputs_num == 0 && isatty (fileno (stdin)))

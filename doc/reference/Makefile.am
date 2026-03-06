@@ -11,7 +11,7 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
 # e.g. DOC_SOURCE_DIR=$(top_srcdir)/gtk $(top_srcdir)/gdk
-DOC_SOURCE_DIR=$(top_srcdir)/lib
+DOC_SOURCE_DIR=$(top_srcdir)/lib $(top_builddir)/lib
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
 SCANGOBJ_OPTIONS=
@@ -34,7 +34,7 @@ FIXXREF_OPTIONS=
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
 # e.g. CFILE_GLOB=$(top_srcdir)/gtk/*.c
-HFILE_GLOB=$(top_srcdir)/lib/*.h
+HFILE_GLOB=$(top_srcdir)/lib/*.h $(top_builddir)/lib/*.h
 CFILE_GLOB=$(top_srcdir)/lib/*.c
 
 # Extra header to include when scanning, which are not under DOC_SOURCE_DIR
@@ -43,7 +43,7 @@ EXTRA_HFILES=
 
 # Header files or dirs to ignore when scanning. Use base file/dir names
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h private_code
-IGNORE_HFILES=bidi.h context.h data.h idna.h punycode.h tables.h tr46map.h
+IGNORE_HFILES=bidi.h context.h data.h idna.h tables.h tr46map.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
