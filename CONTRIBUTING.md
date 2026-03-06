@@ -1,9 +1,8 @@
 # Libidn2 CONTRIBUTING -- Information for developers
-Copyright (C) 2011-2021 Simon Josefsson
+Copyright (C) 2011-2025 Simon Josefsson
 See the end for copying conditions.
 
 This file contains instructions for developers and advanced users.
-See README for the additional tools you need to have installed.
 
 ## Obtaining sources
 
@@ -12,6 +11,59 @@ Download the version controlled sources:
 $ git clone https://gitlab.com/libidn/libidn2.git
 $ cd libidn2
 ```
+
+## Dependencies
+
+If you wish to build the project from version controlled sources,
+rebuild all generated files (e.g., run autoreconf), or modify some
+source code files, you will need to have additional tools installed
+beyond those mentioned in [DEPENDENCIES.md](DEPENDENCIES.md).  None of
+the following tools are necessary if you build Libidn2 in the usual
+way (i.e., ./configure && make).
+
+ * [Automake](https://www.gnu.org/software/automake/)
+ * [Autoconf](https://www.gnu.org/software/autoconf/)
+ * [Libtool](https://www.gnu.org/software/libtool/)
+ * [Gettext](https://www.gnu.org/software/gettext/)
+ * [Texinfo](https://www.gnu.org/software/texinfo/)
+ * [Gperf](https://www.gnu.org/software/gperf/)
+ * [Gengetopt](https://www.gnu.org/software/gengetopt/)
+ * [help2man](https://www.gnu.org/software/help2man/)
+ * [Tar](https://www.gnu.org/software/tar/)
+ * [Gzip](https://www.gnu.org/software/gzip/)
+ * [Texlive & epsf](https://www.tug.org/texlive/) (for PDF manual)
+ * [GTK-DOC](https://www.gtk.org/gtk-doc/) (for API manual)
+ * [Git](https://git-scm.com/)
+ * [Perl](https://www.cpan.org/)
+ * [Valgrind](https://valgrind.org/) (optional)
+ * [abi-compliance-checker](https://github.com/lvc/abi-compliance-checker)
+
+The software is typically distributed with your operating system, and
+the instructions for installing them differ.  Here are some hints:
+
+APT/DPKG-based distributions:
+```
+apt-get install make gcc
+apt-get install git autoconf automake libtool gettext autopoint gperf
+apt-get install libunistring-dev valgrind gengetopt help2man
+apt-get install texinfo texlive gtk-doc-tools
+apt-get install abi-compliance-checker abigail-tools
+```
+
+DNF/RPM-based distributions:
+```
+dnf install -y make gcc
+dnf install -y git autoconf automake libtool gettext-devel patch gperf
+dnf install -y libunistring-devel valgrind gengetopt help2man
+dnf install -y texinfo texinfo-tex texlive gtk-doc dblatex
+dnf install -y libabigail glibc-gconv-extra
+```
+
+On macOS with Xcode and Homebrew:
+```
+brew install autoconf automake libtool gengetopt help2man texinfo
+```
+
 
 ## Building the project
 
@@ -38,15 +90,29 @@ New functionality should be accompanied by a test case which verifies
 the correctness of the new functionality as well as under failure.
 The libidn2 test suite is run on "make check".
 
-When submitting patches it is recommended to open a new merge request
-[on the gitlab site](https://gitlab.com/libidn/libidn2), to force the
-changes to pass the automated test suite.
+When adding a new test code, it is better if it builds standalone
+outside of the libidn2 build infrastructure, using only public header
+files and symbols from installed system libidn2 library (or
+libiconv/libunistring).  Exceptions to this rule is permitted, to do
+white box testing, but there should be sufficient black box coverage
+testing of all public APIs through standalone-usable test code.  If
+your test code does both white box and black box testing, please try
+to separate it into two different source code files, so that one of
+them can be used by system integrators to test functionality of the
+installed library.  The CI/CD testing (.gitlab-ci.yml) contains rule
+that attempts to confirm this for the known working test codes.
 
 # Continuous Integration
 
 The project is built auomatically on every git commit using GitLab
 CI/CD, see the file `.gitlab-ci.yml` for rules and [current libidn2
 pipeline](https://gitlab.com/libidn/libidn2/-/pipelines).
+
+# Submitting patches
+
+When submitting patches it is recommended to open a new merge request
+[on the gitlab site](https://gitlab.com/libidn/libidn2), to force the
+changes to pass the automated test suite.
 
 # Cross-compiling
 

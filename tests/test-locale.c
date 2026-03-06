@@ -1,5 +1,5 @@
 /* test-locale.c --- Self tests for locale-related (iconv) IDNA processing
-   Copyright (C) 2011-2021 Simon Josefsson
+   Copyright (C) 2011-2025 Simon Josefsson
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <config.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,41 +27,28 @@
 
 #include <idn2.h>
 
-static int error_count = 0;
-static int break_on_error = 1;
-
-_GL_ATTRIBUTE_FORMAT_PRINTF_STANDARD (1, 2)
-     static void fail (const char *format, ...)
-{
-  va_list arg_ptr;
-
-  va_start (arg_ptr, format);
-  vfprintf (stderr, format, arg_ptr);
-  va_end (arg_ptr);
-  error_count++;
-  if (break_on_error)
-    exit (EXIT_FAILURE);
-}
-
 int
 main (void)
 {
+  int error_count = 0;
   uint8_t *out;
   int rc;
 
-#if !HAVE_ICONV
-  return 77;
-#endif
-
   if ((rc = idn2_lookup_ul ("abc", NULL, 0)) != IDN2_OK)
     {
-      fail ("special #5 failed with %d\n", rc);
+      printf ("special #5 failed with %d\n", rc);
+
+      if (rc == IDN2_ICONV_FAIL)
+	return 77;
+
+      error_count++;
     }
 
   /* test libidn compatibility functions */
   if ((rc = idna_to_ascii_lz ("abc", (char **) &out, 0)) != IDN2_OK)
     {
-      fail ("special #6 failed with %d\n", rc);
+      printf ("special #6 failed with %d\n", rc);
+      error_count++;
     }
   else
     {
@@ -67,7 +56,12 @@ main (void)
     }
 
   if ((rc = idn2_register_ul ("foo", NULL, NULL, 0)) != IDN2_OK)
-    fail ("special #6 failed with %d\n", rc);
+    {
+      printf ("special #6 failed with %d\n", rc);
+      error_count++;
+    }
 
-  return error_count;
+  printf ("\nerror_count: %d\n", error_count);
+
+  return !!error_count;
 }
