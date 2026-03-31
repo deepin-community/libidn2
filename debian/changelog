@@ -1,3 +1,12 @@
+libidn2 (2.3.8-2deepin1) unstable; urgency=medium
+
+  * Add sw_64 (Sunway) architecture support to config.sub
+    - Add sed command in debian/rules to patch config.sub after bootstrap
+    - Fixes build error: "configure: error: config.sub sw_64-linux-gnu failed"
+    - The sw_64 (Sunway/申威) architecture is used in Chinese HPC systems
+
+ -- lichenggang <lichenggang@uniontech.com>  Mon, 31 Mar 2026 17:10:00 +0800
+
 libidn2 (2.3.8-2) unstable; urgency=medium
 
   [ Helmut Grohne ]
